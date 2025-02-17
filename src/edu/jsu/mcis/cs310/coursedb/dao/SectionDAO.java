@@ -1,5 +1,6 @@
 package edu.jsu.mcis.cs310.coursedb.dao;
 
+import com.github.cliftonlabs.json_simple.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -7,7 +8,7 @@ import java.sql.ResultSetMetaData;
 
 public class SectionDAO {
     
-    private static final String QUERY_FIND = "SELECT * FROM section WHERE termid = ? AND subjectid = ? AND num = ? ORDER BY crn";
+    private static final String QUERY_FIND = "SELECT * FROM section WHERE subjectid = ? AND num = ? ORDER BY ?";
     
     private final DAOFactory daoFactory;
     
@@ -21,7 +22,6 @@ public class SectionDAO {
         
         PreparedStatement ps = null;
         ResultSet rs = null;
-        ResultSetMetaData rsmd = null;
         
         try {
             
@@ -29,8 +29,19 @@ public class SectionDAO {
             
             if (conn.isValid(0)) {
                 
-                // INSERT YOUR CODE HERE
-                
+                // Create a prepared statement using the query string defined above
+                ps = conn.prepareStatement(QUERY_FIND);
+                // Set the first parameter (the first "?") in the prepared statement to the given student ID
+                ps.setNString(1, subjectid);
+                ps.setNString(2,num);
+                ps.setInt(3, termid);
+                // Execute the query, and get a java.sql.ResultSet
+                boolean hasresults = ps.execute();
+                // Get the metadata from the result set
+                if(hasresults){
+                    rs = ps.getResultSet();
+                    result = DAOUtility.getResultSetAsJson(rs);
+                }
             }
             
         }

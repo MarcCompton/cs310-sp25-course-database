@@ -7,7 +7,7 @@ import edu.jsu.mcis.cs310.coursedb.dao.*;
 public class Main {
     
     private static final String USERNAME = "nobody@jsu.edu";
-    
+   
     public static void main(String[] args) {
         
         // Create DAO Objects

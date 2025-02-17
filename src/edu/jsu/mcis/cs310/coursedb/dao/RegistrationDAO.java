@@ -8,6 +8,12 @@ import java.sql.Statement;
 
 public class RegistrationDAO {
     
+    // constants
+    private static final String QUERY_REGISTER = "INSERT INTO registration (studentid,termid,crn) VALUES (?,?,?)";
+    private static final String QUERY_DROP = "DELETE FROM registration WHERE studentid = ? AND termid = ? AND crn = ?";
+    private static final String QUERY_WITHDRAW = "DELETE FROM registration WHERE studentid = ? AND termid = ?";
+    private static final String QUERY_LIST = "SELECT * FROM registration WHERE studentid = ? AND termid = ? ORDER BY ?";
+    
     private final DAOFactory daoFactory;
     
     RegistrationDAO(DAOFactory daoFactory) {
@@ -17,7 +23,6 @@ public class RegistrationDAO {
     public boolean create(int studentid, int termid, int crn) {
         
         boolean result = false;
-        
         PreparedStatement ps = null;
         ResultSet rs = null;
         
@@ -27,8 +32,20 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
-                // INSERT YOUR CODE HERE
-                
+                // Check for existing registration
+                ps = conn.prepareStatement(QUERY_REGISTER);
+                // Set parameters
+                ps.setInt(1, studentid);
+                ps.setInt(2,termid);
+                ps.setInt(3, crn);
+                // Execute query
+                int updateCount = ps.executeUpdate();
+                // If successful, return true
+                if (updateCount > 0) {
+            
+                    result = true;
+
+                }
             }
             
         }
@@ -49,7 +66,6 @@ public class RegistrationDAO {
     public boolean delete(int studentid, int termid, int crn) {
         
         boolean result = false;
-        
         PreparedStatement ps = null;
         
         try {
@@ -58,7 +74,20 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
-                // INSERT YOUR CODE HERE
+                // Check for existing registration
+                ps = conn.prepareStatement(QUERY_DROP);
+                // Set parameters
+                ps.setInt(1, studentid);
+                ps.setInt(2,termid);
+                ps.setInt(3, crn);
+                // Execute query
+                int updateCount = ps.executeUpdate();
+                // If successful, return true
+                if (updateCount > 0) {
+            
+                    result = true;
+
+                }
                 
             }
             
@@ -79,7 +108,6 @@ public class RegistrationDAO {
     public boolean delete(int studentid, int termid) {
         
         boolean result = false;
-        
         PreparedStatement ps = null;
         
         try {
@@ -88,7 +116,19 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
-                // INSERT YOUR CODE HERE
+                // Check for existing registration
+                ps = conn.prepareStatement(QUERY_WITHDRAW);
+                // Set parameters
+                ps.setInt(1, studentid);
+                ps.setInt(2,termid);
+                // Execute query
+                int updateCount = ps.executeUpdate();
+                // If successful, return true
+                if (updateCount > 0) {
+            
+                    result = true;
+
+                }
                 
             }
             
@@ -108,7 +148,7 @@ public class RegistrationDAO {
 
     public String list(int studentid, int termid) {
         
-        String result = null;
+        String result = "[]";
         
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -120,8 +160,17 @@ public class RegistrationDAO {
             
             if (conn.isValid(0)) {
                 
-                // INSERT YOUR CODE HERE
-                
+                // Check for existing registration
+                ps = conn.prepareStatement(QUERY_LIST);
+                // Set parameters
+                ps.setInt(1, studentid);
+                ps.setInt(2,termid);
+                ps.setString(3, "crn");
+                // Execute query
+                if(ps.execute()){
+                    rs = ps.getResultSet();
+                    result = DAOUtility.getResultSetAsJson(rs);
+                }
             }
             
         }
